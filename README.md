@@ -33,8 +33,33 @@ Additional information about the labels and collection method will be provided b
 
 Please find the dataset [here](https://www.kaggle.com/c/google-quest-challenge/data)
 
+## Solution
+
+Our solution to the problem is an Ensemble of BERT Large and BERT Base models with custom classification heads.
+We train all of our models using a weighted Binary Cross Entropy loss for which we figured out best weights by analyzing the dataset. 
+
+Here's the weighted BCE loss that we used to train our models.
+```bash
+loss_fct = nn.BCEWithLogitsLoss(pos_weight=torch.Tensor([0.9, 1, 1.5, 0.8, 0.8,
+                                                         0.8, 0.96, 1.1, 1.1, 3, #question_not_really_a_question
+                                                         1, 1.1, 2, 3, 3, #definition
+                                                         2, 1, 2, 1, 2, #spelling
+                                                         0.9, 0.75, 0.9, 0.75, 0.75, #answer relevance
+                                                         0.7, 1, 2.5, 1, 0.75]) , reduction='mean')
+```
+
+Our final solution was an ensemble of 3 different BERT Large and 1 BERT Base models, here's the list of models that we trained:
+
+* BERT-Large Uncased Whole Word masking
+* BERT-Large Uncased
+* BERT-Large Cased
+* BERT-Base Uncased
+
+
 ## Evaluation metric
+
 [Spearman's correlation coefficient](https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient)
 
 ## Results
-All individual models had a Spearman score in range 0.454-0.471. Our final solution had a Spearman score of 0.42430 and 10th/1571 rank on private leaderboard.
+
+All individual models had a Spearman score in range 0.454-0.471. Our final solution had a Spearman score of 0.4243 and **10th/1571** rank on private leaderboard.
